@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # Shard 1
+  shard1:
+    image: mongo:7.0
+    container_name: shard1
+    ports:
+      - "27017:27017"
+    volumes:
+      - shard1_data:/data/db
+    command: mongod --shardsvr --replSet rs0 --port 27017 --dbpath /data/db
+    networks:
+      - mongo_network
+
+  # Shard 2
+  shard2:
+    image: mongo:7.0
+    container_name: shard2
+    ports:
+      - "27018:27017"
+    volumes:
+      - shard2_data:/data/db
+    command: mongod --shardsvr --replSet rs1 --port 27017 --dbpath /data/db
+    networks:
+      - mongo_network
+
+  # Shard 3
+  shard3:
+    image: mongo:7.0
+    container_name: shard3
+    ports:
+      - "27019:27017"
+    volumes:
+      - shard3_data:/data/db
+    command: mongod --shardsvr --replSet rs2 --port 27017 --dbpath /data/db
+    networks:
+      - mongo_network
+
+  # Config Server
+  config:
+    image: mongo:7.0
+    container_name: config
+    ports:
+      - "27020:27017"
+    volumes:
+      - config_data:/data/db
+    command: mongod --configsvr --replSet configrs --port 27017 --dbpath /data/db
+    networks:
+      - mongo_network
+
+  # Mongos Router
+  mongos:
+    image: mongo:7.0
+    container_name: mongos
+    ports:
+      - "27021:27017"
+    command: mongos --configdb configrs/config:27017 --bind_ip 0.0.0.0
+    depends_on:
+      - config
+      - shard1
+      - shard2
+      - shard3
+    networks:
+      - mongo_network
+
+volumes:
+  shard1_data:
+  shard2_data:
+  shard3_data:
+  config_data:
+
+networks:
+  mongo_network:
+    driver: bridge
