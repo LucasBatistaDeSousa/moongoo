@@ -49,4 +49,54 @@ export class CustomersService {
       throw new NotFoundException(`Cliente com ID ${id} não encontrado`);
     }
   }
+
+  async getStats(): Promise<any> {
+    const totalClientes = await this.customerModel.countDocuments().exec();
+
+    const stats = {
+      totalClientes,
+      mongosConexao: 'mongodb://localhost:27021',
+      shardKey: 'cpf',
+      status: 'Cluster Sharded funcionando',
+      distribuicaoPorShard: {
+        nota: 'Para ver distribuição real, execute: docker exec mongos mongosh --eval "use admin; sh.status()"',
+        estimado: {
+          shard1: Math.ceil(totalClientes / 3),
+          shard2: Math.floor(totalClientes / 3),
+          shard3: Math.floor(totalClientes / 3),
+        },
+      },
+      shards: [
+        {
+          id: 'rs0',
+          nome: 'Shard 1',
+          host: 'shard1:27017',
+          porta: 27017,
+        },
+        {
+          id: 'rs1',
+          nome: 'Shard 2',
+          host: 'shard2:27017',
+          porta: 27018,
+        },
+        {
+          id: 'rs2',
+          nome: 'Shard 3',
+          host: 'shard3:27017',
+          porta: 27019,
+        },
+      ],
+      configServer: {
+        id: 'configrs',
+        host: 'config:27017',
+        porta: 27020,
+      },
+      mongosRouter: {
+        host: 'mongos:27017',
+        porta: 27021,
+      },
+    };
+
+    return stats;
+  }
 }

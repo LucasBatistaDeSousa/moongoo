@@ -23,6 +23,11 @@ export class CustomersController {
     return this.customersService.create(createCustomerDto);
   }
 
+  @Get('stats')
+  async getStats(): Promise<any> {
+    return this.customersService.getStats();
+  }
+
   @Get()
   async findAll(): Promise<Customer[]> {
     return this.customersService.findAll();

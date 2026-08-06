@@ -7,31 +7,31 @@ import { Document } from 'mongoose';
 })
 export class Customer extends Document {
   @Prop({ required: true })
-  nome: string;
+  nome!: string;
 
   @Prop({ required: true, unique: true })
-  cpf: string;
+  cpf!: string;
+
+  @Prop({ required: true, unique: true })
+  email!: string;
 
   @Prop({ required: true })
-  email: string;
+  telefone!: string;
 
   @Prop({ required: true })
-  telefone: string;
+  dataNascimento!: Date;
 
   @Prop({ required: true })
-  dataNascimento: Date;
+  endereco!: string;
 
   @Prop({ required: true })
-  endereco: string;
+  cidade!: string;
 
   @Prop({ required: true })
-  cidade: string;
+  estado!: string;
 
   @Prop({ required: true })
-  estado: string;
-
-  @Prop({ required: true })
-  cep: string;
+  cep!: string;
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
