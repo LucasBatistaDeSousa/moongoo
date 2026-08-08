@@ -6,10 +6,6 @@ import { CustomersModule } from './customers/customers.module';
   imports: [
     MongooseModule.forRoot(
       process.env.MONGO_URI || 'mongodb://localhost:27021/customers',
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      },
     ),
     CustomersModule,
   ],
