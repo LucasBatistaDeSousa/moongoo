@@ -16,22 +16,18 @@ const clientes = [
 const API_URL = process.env.API_URL || 'http://localhost:3000';
 
 async function seed() {
-  console.log('🌱 Iniciando seed de clientes...\n');
   let success = 0;
   let failed = 0;
 
   for (const cliente of clientes) {
     try {
-      const response = await axios.post(`${API_URL}/customers`, cliente);
-      console.log(`✅ ${cliente.nome.padEnd(20)} | CPF: ${cliente.cpf} | ID: ${response.data._id}`);
+      await axios.post(`${API_URL}/customers`, cliente);
       success++;
     } catch (error) {
-      console.error(`❌ Erro ao criar ${cliente.nome}: ${error.response?.data?.message || error.message}`);
       failed++;
     }
   }
 
-  console.log(`\n📊 Resumo: ${success} criados, ${failed} falhados`);
   process.exit(failed > 0 ? 1 : 0);
 }
 
