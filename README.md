@@ -118,6 +118,19 @@ Backend:  http://localhost:3000
 - MongoDB distribui automaticamente quando há múltiplos chunks
 - Ideal para aplicações com milhões de registros
 
+### Verificar Distribuição de Shards
+
+Para visualizar como os dados estão distribuídos entre os 3 shards:
+
+```bash
+docker exec mongos mongosh --eval "sh.status()"
+```
+
+Isso mostra:
+- Quantos documentos estão em cada shard (rs0, rs1, rs2)
+- Quantos chunks existem por shard
+- Ranges de CPF de cada chunk
+
 ## Dados Iniciais
 
 O script `seed.js` popula automaticamente 10 clientes ao iniciar o backend.
