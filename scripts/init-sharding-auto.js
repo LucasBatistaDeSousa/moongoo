@@ -66,8 +66,6 @@ async function initSharding() {
       console.log('');
       console.log('🎉 SHARDING INICIALIZADO COM SUCESSO!');
       console.log('');
-      const status = await admin.admin().command({ sharstatus: 1 });
-      console.log('Status:', JSON.stringify(status, null, 2));
 
       await client.close();
       process.exit(0);

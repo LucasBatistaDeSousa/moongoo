@@ -62,6 +62,13 @@ function CustomerDetail({ customer, onEdit, onDelete }) {
           <label>ID MongoDB:</label>
           <p className="id-text">{customer._id}</p>
         </div>
+
+        {customer.shard && (
+          <div className="detail-item shard-info">
+            <label>📍 Shard:</label>
+            <p className="shard-badge">{customer.shard}</p>
+          </div>
+        )}
       </div>
 
       <div className="detail-actions">

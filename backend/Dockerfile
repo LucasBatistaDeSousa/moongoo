@@ -3,8 +3,8 @@ FROM node:20-alpine as builder
 WORKDIR /app
 
 # Instalar dependências
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json ./
+RUN npm install
 
 # Copiar código
 COPY src ./src
@@ -21,8 +21,8 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Instalar apenas dependências de produção
-COPY package.json package-lock.json ./
-RUN npm ci --only=production
+COPY package.json ./
+RUN npm install --omit=dev
 
 # Copiar build do stage anterior
 COPY --from=builder /app/dist ./dist

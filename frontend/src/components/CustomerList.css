@@ -34,7 +34,7 @@
 
 .table-header {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 2fr;
+  grid-template-columns: 2fr 1.5fr 2fr 1fr;
   gap: 1rem;
   padding: 1rem;
   background-color: #f8f9fa;
@@ -52,7 +52,7 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 2fr;
+  grid-template-columns: 2fr 1.5fr 2fr 1fr;
   gap: 1rem;
   padding: 1rem;
   border-bottom: 1px solid #e9ecef;
@@ -84,6 +84,24 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.col-shard {
+  text-align: center;
+}
+
+.shard-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: #667eea;
+  color: white;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.table-row.selected .shard-badge {
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 @media (max-width: 768px) {
