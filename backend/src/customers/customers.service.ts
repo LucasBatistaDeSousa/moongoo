@@ -109,11 +109,23 @@ export class CustomersService {
   async debugSharding(): Promise<any> {
     try {
       const client = this.connection.getClient();
+      const adminDb = client.db('admin');
       const configDb = client.db('config');
+
+      console.log('[DEBUG] Querying config database for chunks...');
+
       const chunks = await configDb
         .collection('chunks')
         .find({ ns: 'customers.customers' })
         .toArray();
+
+      console.log(`[DEBUG] Found ${chunks.length} chunks`);
+
+      const collections = await configDb
+        .collection('collections')
+        .findOne({ _id: { $eq: 'customers.customers' } } as any);
+
+      console.log(`[DEBUG] Collection info:`, JSON.stringify(collections));
 
       return {
         chunks: chunks.map(c => ({
@@ -122,8 +134,10 @@ export class CustomersService {
           shard: c.shard,
         })),
         totalChunks: chunks.length,
+        collection: collections,
       };
     } catch (error) {
+      console.error('[DEBUG] Error in debugSharding:', String(error));
       return { error: String(error) };
     }
   }
