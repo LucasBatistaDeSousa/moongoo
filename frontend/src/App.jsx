@@ -5,7 +5,12 @@ import CustomerForm from './components/CustomerForm';
 import CustomerList from './components/CustomerList';
 import CustomerDetail from './components/CustomerDetail';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+const API_URL = process.env.REACT_APP_API_URL || (() => {
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:3000';
+  }
+  return 'http://backend:3000';
+})();
 
 function App() {
   const [customers, setCustomers] = useState([]);
