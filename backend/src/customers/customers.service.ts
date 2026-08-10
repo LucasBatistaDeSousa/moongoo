@@ -28,24 +28,36 @@ export class CustomersService {
         .toArray();
 
       if (!chunks || chunks.length === 0) {
+        console.log(`[DEBUG] No chunks found for ns: customers.customers`);
         return 'unknown';
       }
 
       const cpfNum = parseInt(cpf.replace(/\D/g, ''), 10);
+      console.log(`[DEBUG] CPF: ${cpf} -> Numeric: ${cpfNum}`);
+      console.log(`[DEBUG] Total chunks: ${chunks.length}`);
 
-      for (const chunk of chunks) {
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
         const min = chunk.min?.cpf;
         const max = chunk.max?.cpf;
 
-        if (typeof min === 'number' && typeof max === 'number') {
-          if (cpfNum >= min && cpfNum < max) {
-            return chunk.shard;
+        console.log(`[DEBUG] Chunk ${i}: min=${min}, max=${max}, shard=${chunk.shard}`);
+
+        if (min !== undefined && max !== undefined) {
+          if (typeof min === 'number' && typeof max === 'number') {
+            if (cpfNum >= min && cpfNum < max) {
+              console.log(`[DEBUG] MATCH! CPF ${cpf} -> Shard ${chunk.shard}`);
+              return chunk.shard;
+            }
           }
         }
       }
 
-      return chunks[chunks.length - 1]?.shard || 'unknown';
+      const lastShard = chunks[chunks.length - 1]?.shard;
+      console.log(`[DEBUG] No match, using last shard: ${lastShard}`);
+      return lastShard || 'unknown';
     } catch (error) {
+      console.error(`[DEBUG] Error in getShardForCpf:`, String(error));
       return 'unknown';
     }
   }
@@ -91,6 +103,28 @@ export class CustomersService {
 
     if (!result) {
       throw new NotFoundException(`Cliente com ID ${id} não encontrado`);
+    }
+  }
+
+  async debugSharding(): Promise<any> {
+    try {
+      const client = this.connection.getClient();
+      const configDb = client.db('config');
+      const chunks = await configDb
+        .collection('chunks')
+        .find({ ns: 'customers.customers' })
+        .toArray();
+
+      return {
+        chunks: chunks.map(c => ({
+          min: c.min,
+          max: c.max,
+          shard: c.shard,
+        })),
+        totalChunks: chunks.length,
+      };
+    } catch (error) {
+      return { error: String(error) };
     }
   }
 }

@@ -46,4 +46,9 @@ export class CustomersController {
   async delete(@Param('id') id: string): Promise<void> {
     return this.customersService.delete(id);
   }
+
+  @Get('debug/sharding')
+  async debugSharding(): Promise<any> {
+    return this.customersService.debugSharding();
+  }
 }

@@ -15,7 +15,7 @@ const clientes = [
 
 const API_URL = process.env.API_URL || 'http://backend:3000';
 
-async function waitForAPI(maxRetries = 30) {
+async function waitForAPI(maxRetries = 60) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       await axios.get(`${API_URL}/customers`, { timeout: 2000 });
@@ -29,9 +29,30 @@ async function waitForAPI(maxRetries = 30) {
   throw new Error('API did not start in time');
 }
 
+async function waitForSharding(maxRetries = 30) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await axios.get(`${API_URL}/customers/debug/sharding`, { timeout: 2000 });
+      const chunks = response.data?.chunks || [];
+      if (chunks.length > 0) {
+        console.log(`[SEED] Sharding ready! Found ${chunks.length} chunks`);
+        return true;
+      }
+      console.log(`[SEED] Waiting for sharding... (${i + 1}/${maxRetries})`);
+      await new Promise(r => setTimeout(r, 1000));
+    } catch (error) {
+      console.log(`[SEED] Waiting for sharding setup... (${i + 1}/${maxRetries})`);
+      await new Promise(r => setTimeout(r, 1000));
+    }
+  }
+  console.log('[SEED] Sharding not ready, proceeding anyway...');
+  return true;
+}
+
 async function seed() {
   try {
     await waitForAPI();
+    await waitForSharding();
 
     let success = 0;
     let failed = 0;
