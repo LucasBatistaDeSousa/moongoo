@@ -13,26 +13,48 @@ const clientes = [
   { nome: 'Bruno Castro', cpf: '101.010.101-01', email: 'bruno1@test.com', telefone: '(41)98888-8888', dataNascimento: '1989-12-03', endereco: 'Rua J, 456', cidade: 'Curitiba', estado: 'PR', cep: '80000-000' },
 ];
 
-const API_URL = process.env.API_URL || 'http://localhost:3000';
+const API_URL = process.env.API_URL || 'http://backend:3000';
 
-async function seed() {
-  console.log('🌱 Iniciando seed de clientes...\n');
-  let success = 0;
-  let failed = 0;
-
-  for (const cliente of clientes) {
+async function waitForAPI(maxRetries = 30) {
+  for (let i = 0; i < maxRetries; i++) {
     try {
-      const response = await axios.post(`${API_URL}/customers`, cliente);
-      console.log(`✅ ${cliente.nome.padEnd(20)} | CPF: ${cliente.cpf} | ID: ${response.data._id}`);
-      success++;
+      await axios.get(`${API_URL}/customers`, { timeout: 3000 });
+      console.log('✅ API pronta!');
+      return true;
     } catch (error) {
-      console.error(`❌ Erro ao criar ${cliente.nome}: ${error.response?.data?.message || error.message}`);
-      failed++;
+      console.log(`⏳ Aguardando API... (${i + 1}/${maxRetries})`);
+      await new Promise(r => setTimeout(r, 1000));
     }
   }
+  throw new Error('API não respondeu a tempo');
+}
 
-  console.log(`\n📊 Resumo: ${success} criados, ${failed} falhados`);
-  process.exit(failed > 0 ? 1 : 0);
+async function seed() {
+  try {
+    console.log('🌱 Iniciando seed de clientes...\n');
+
+    await waitForAPI();
+
+    let success = 0;
+    let failed = 0;
+
+    for (const cliente of clientes) {
+      try {
+        const response = await axios.post(`${API_URL}/customers`, cliente, { timeout: 5000 });
+        console.log(`✅ ${cliente.nome.padEnd(20)} | CPF: ${cliente.cpf} | Shard: ${response.data.shard}`);
+        success++;
+      } catch (error) {
+        console.error(`❌ Erro ao criar ${cliente.nome}: ${error.response?.data?.message || error.message}`);
+        failed++;
+      }
+    }
+
+    console.log(`\n📊 Resumo: ${success} criados, ${failed} falhados`);
+    process.exit(failed > 0 ? 1 : 0);
+  } catch (error) {
+    console.error('❌ Erro fatal:', error.message);
+    process.exit(1);
+  }
 }
 
 seed();
