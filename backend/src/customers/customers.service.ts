@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection } from '@nestjs/mongoose';
 import { Model, Connection } from 'mongoose';
 import { Customer } from './schemas/customer.schema';
 import { CreateCustomerDto } from './dto/create-customer.dto';
@@ -8,7 +9,7 @@ import { CreateCustomerDto } from './dto/create-customer.dto';
 export class CustomersService {
   constructor(
     @InjectModel(Customer.name) private customerModel: Model<Customer>,
-    private connection: Connection,
+    @InjectConnection() private connection: Connection,
   ) {}
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
