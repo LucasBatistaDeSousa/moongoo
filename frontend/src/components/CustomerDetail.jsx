@@ -62,6 +62,11 @@ function CustomerDetail({ customer, onEdit, onDelete }) {
           <label>ID MongoDB:</label>
           <p className="id-text">{customer._id}</p>
         </div>
+
+        <div className="detail-item">
+          <label>🗄️ Shard:</label>
+          <p className="shard-text">{customer.shard || 'unknown'}</p>
+        </div>
       </div>
 
       <div className="detail-actions">

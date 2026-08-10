@@ -49,6 +49,15 @@
   word-break: break-all;
 }
 
+.detail-item .shard-text {
+  font-family: monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #667eea;
+  background-color: #f0f4ff !important;
+  border: 1px solid #667eea;
+}
+
 .detail-actions {
   display: flex;
   gap: 1rem;

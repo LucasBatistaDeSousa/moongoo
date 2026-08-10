@@ -34,7 +34,7 @@
 
 .table-header {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 2fr;
+  grid-template-columns: 2fr 1.5fr 2fr 1fr;
   gap: 1rem;
   padding: 1rem;
   background-color: #f8f9fa;
@@ -52,7 +52,7 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 2fr;
+  grid-template-columns: 2fr 1.5fr 2fr 1fr;
   gap: 1rem;
   padding: 1rem;
   border-bottom: 1px solid #e9ecef;
@@ -86,6 +86,27 @@
   white-space: nowrap;
 }
 
+.col-shard {
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.shard-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  background-color: #667eea;
+  color: white;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  font-family: monospace;
+}
+
+.table-row.selected .shard-badge {
+  background-color: white;
+  color: #667eea;
+}
+
 @media (max-width: 768px) {
   .table-header,
   .table-row {
@@ -104,6 +125,11 @@
 
   .col-email::before {
     content: 'E-mail: ';
+    font-weight: 600;
+  }
+
+  .col-shard::before {
+    content: 'Shard: ';
     font-weight: 600;
   }
 }
