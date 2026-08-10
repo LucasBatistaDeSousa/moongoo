@@ -31,7 +31,7 @@ function generateClientes(count) {
   return clientes;
 }
 
-const clientes = generateClientes(50000);
+const clientes = generateClientes(1500);
 
 const API_URL = process.env.API_URL || 'http://backend:3000';
 
