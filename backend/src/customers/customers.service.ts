@@ -105,4 +105,27 @@ export class CustomersService {
       throw new NotFoundException(`Cliente com ID ${id} não encontrado`);
     }
   }
+
+  async debugSharding(): Promise<any> {
+    try {
+      const client = this.connection.getClient();
+      const configDb = client.db('config');
+
+      const chunks = await configDb
+        .collection('chunks')
+        .find({ ns: 'customers.customers' })
+        .toArray();
+
+      return {
+        chunks: chunks.map((c) => ({
+          min: c.min,
+          max: c.max,
+          shard: c.shard,
+        })),
+        totalChunks: chunks.length,
+      };
+    } catch (error) {
+      return { error: String(error) };
+    }
+  }
 }
