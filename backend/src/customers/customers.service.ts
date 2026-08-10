@@ -18,27 +18,29 @@ export class CustomersService {
 
   private async getShardForCpf(cpf: string): Promise<string> {
     try {
-      const db = this.connection.db;
       const configDb = this.connection.client.db('config');
       const chunks = await configDb.collection('chunks').find({
         ns: 'customers.customers',
       }).toArray();
 
+      if (chunks.length === 0) {
+        return 'unknown';
+      }
+
+      const cpfNum = parseInt(cpf.replace(/\D/g, ''), 10);
+
       for (const chunk of chunks) {
         const min = chunk.min?.cpf;
         const max = chunk.max?.cpf;
 
-        if (min !== undefined && max !== undefined) {
-          if (cpf >= min && cpf < max) {
-            return chunk.shard;
+        if (typeof min === 'number' && typeof max === 'number') {
+          if (cpfNum >= min && cpfNum < max) {
+            return chunk.shard || 'unknown';
           }
-        } else if (min !== undefined && cpf >= min) {
-          return chunk.shard;
-        } else if (max !== undefined && cpf < max) {
-          return chunk.shard;
         }
       }
-      return 'unknown';
+
+      return chunks[0]?.shard || 'unknown';
     } catch (error) {
       return 'unknown';
     }
