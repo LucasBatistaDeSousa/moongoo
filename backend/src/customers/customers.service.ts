@@ -32,8 +32,8 @@ export class CustomersService {
       const cpfNum = parseInt(cpf.replace(/\D/g, ''), 10);
 
       for (const chunk of chunks) {
-        const min = chunk.min?.cpf;
-        const max = chunk.max?.cpf;
+        const min = chunk.min?.cpf !== undefined ? chunk.min.cpf : chunk.min;
+        const max = chunk.max?.cpf !== undefined ? chunk.max.cpf : chunk.max;
 
         if (typeof min === 'number' && typeof max === 'number') {
           if (cpfNum >= min && cpfNum < max) {
@@ -42,7 +42,14 @@ export class CustomersService {
         }
       }
 
-      return chunks[0]?.shard || 'unknown';
+      for (const chunk of chunks) {
+        const min = chunk.min?.cpf !== undefined ? chunk.min.cpf : chunk.min;
+        if (typeof min === 'number' && cpfNum < min) {
+          return chunk.shard || 'unknown';
+        }
+      }
+
+      return chunks[chunks.length - 1]?.shard || 'unknown';
     } catch (error) {
       return 'unknown';
     }
