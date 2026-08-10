@@ -118,8 +118,8 @@ services:
     image: mongo:7.0
     container_name: init-sharding
     volumes:
-      - ./scripts/init-sharding.sh:/app/init-sharding.sh
-    command: bash /app/init-sharding.sh
+      - ./scripts/init-sharding.mongosh:/app/init-sharding.mongosh
+    command: mongosh mongodb://mongos:27017 < /app/init-sharding.mongosh
     depends_on:
       mongos:
         condition: service_healthy

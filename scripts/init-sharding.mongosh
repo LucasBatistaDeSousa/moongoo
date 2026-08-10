@@ -1,0 +1,30 @@
+// Conecta no mongos e faz setup de sharding
+// Roda com: mongosh mongodb://mongos:27017 < init-sharding.mongosh
+
+try {
+  print('🔗 Adicionando shards...');
+  sh.addShard('rs0/shard1:27017');
+  sh.addShard('rs1/shard2:27017');
+  sh.addShard('rs2/shard3:27017');
+  print('✅ Shards adicionados');
+
+  print('📊 Habilitando sharding no banco...');
+  sh.enableSharding('customers');
+  print('✅ Sharding habilitado');
+
+  print('📑 Criando índice no CPF...');
+  use('customers');
+  db.customers.createIndex({ cpf: 1 }, { sparse: true });
+  print('✅ Índice criado');
+
+  print('🗄️ Habilitando sharding na collection...');
+  sh.shardCollection('customers.customers', { cpf: 1 });
+  print('✅ Collection sharding habilitado');
+
+  print('');
+  print('🎉 SHARDING INICIALIZADO COM SUCESSO!');
+  print('');
+} catch (error) {
+  print('❌ Erro: ' + error.message);
+  quit(1);
+}
