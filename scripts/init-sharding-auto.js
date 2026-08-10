@@ -48,7 +48,6 @@ async function initSharding() {
         key: { cpf: 1 }
       });
 
-      console.log('✅ Sharding inicializado com sucesso!');
       await client.close();
       process.exit(0);
     } catch (error) {
@@ -56,7 +55,6 @@ async function initSharding() {
       if (retries < MAX_RETRIES) {
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       } else {
-        console.error('❌ Erro ao inicializar sharding');
         process.exit(1);
       }
     }
