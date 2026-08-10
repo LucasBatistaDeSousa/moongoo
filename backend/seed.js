@@ -29,6 +29,26 @@ async function waitForAPI(maxRetries = 60) {
   throw new Error('API did not start in time');
 }
 
+async function createInitialChunk() {
+  try {
+    const testCliente = {
+      nome: 'Teste Inicial',
+      cpf: '000.000.000-00',
+      email: 'teste@test.com',
+      telefone: '(00)00000-0000',
+      dataNascimento: '2000-01-01',
+      endereco: 'Rua Teste, 1',
+      cidade: 'Teste',
+      estado: 'TT',
+      cep: '00000-000'
+    };
+    await axios.post(`${API_URL}/customers`, testCliente, { timeout: 5000 });
+    console.log('[SEED] Initial document created to trigger chunk creation');
+  } catch (error) {
+    console.log('[SEED] Initial document may already exist');
+  }
+}
+
 async function waitForSharding(maxRetries = 30) {
   for (let i = 0; i < maxRetries; i++) {
     try {
@@ -38,23 +58,24 @@ async function waitForSharding(maxRetries = 30) {
         console.log(`[SEED] Sharding ready! Found ${chunks.length} chunks`);
         return true;
       }
-      console.log(`[SEED] Waiting for sharding... (${i + 1}/${maxRetries})`);
-      await new Promise(r => setTimeout(r, 1000));
+      console.log(`[SEED] Waiting for chunks creation... (${i + 1}/${maxRetries})`);
+      await new Promise(r => setTimeout(r, 2000));
     } catch (error) {
-      console.log(`[SEED] Waiting for sharding setup... (${i + 1}/${maxRetries})`);
-      await new Promise(r => setTimeout(r, 1000));
+      console.log(`[SEED] Waiting for sharding... (${i + 1}/${maxRetries})`);
+      await new Promise(r => setTimeout(r, 2000));
     }
   }
-  console.log('[SEED] Sharding not ready, proceeding anyway...');
+  console.log('[SEED] Chunks not created, proceeding...');
   return true;
 }
 
 async function seed() {
   try {
     await waitForAPI();
+    await createInitialChunk();
     await waitForSharding();
 
-    let success = 0;
+    let success = 1;
     let failed = 0;
 
     for (const cliente of clientes) {
