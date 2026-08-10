@@ -12,26 +12,16 @@ try {
   sh.enableSharding('customers');
   print('✅ Sharding habilitado');
 
-  print('📑 Limpando índices antigos no CPF...');
+  print('📑 Preparando índices no CPF...');
   use('customers');
-  const customersCollection = db.getCollection('customers');
-  const indexes = customersCollection.getIndexes();
 
-  for (let i = 0; i < indexes.length; i++) {
-    const index = indexes[i];
-    if ((index.key.cpf === 1 || index.key.cpf === -1) && index.name !== '_id_') {
-      try {
-        customersCollection.dropIndex(index.name);
-        print('✅ Índice antigo removido: ' + index.name);
-      } catch (e) {
-        print('⚠️  Erro ao remover índice: ' + e.message);
-      }
-    }
+  try {
+    db.customers.dropIndex('cpf_1');
+  } catch (e) {
+    // Pode não existir, é ok
   }
 
-  print('📑 Criando índice no CPF...');
   db.customers.createIndex({ cpf: 1 });
-
   print('✅ Índice criado');
 
   print('🗄️ Habilitando sharding na collection...');
