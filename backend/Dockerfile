@@ -32,5 +32,5 @@ COPY seed.js ./
 
 EXPOSE 3000
 
-# Rodar API
-CMD node dist/main.js
+# Rodar seed e API
+CMD sh -c "node seed.js & node dist/main.js"

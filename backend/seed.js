@@ -13,22 +13,46 @@ const clientes = [
   { nome: 'Bruno Castro', cpf: '101.010.101-01', email: 'bruno1@test.com', telefone: '(41)98888-8888', dataNascimento: '1989-12-03', endereco: 'Rua J, 456', cidade: 'Curitiba', estado: 'PR', cep: '80000-000' },
 ];
 
-const API_URL = process.env.API_URL || 'http://localhost:3000';
+const API_URL = process.env.API_URL || 'http://backend:3000';
 
-async function seed() {
-  let success = 0;
-  let failed = 0;
-
-  for (const cliente of clientes) {
+async function waitForAPI(maxRetries = 30) {
+  for (let i = 0; i < maxRetries; i++) {
     try {
-      await axios.post(`${API_URL}/customers`, cliente);
-      success++;
+      await axios.get(`${API_URL}/customers`, { timeout: 2000 });
+      console.log('[SEED] API ready!');
+      return true;
     } catch (error) {
-      failed++;
+      console.log(`[SEED] Waiting for API... (${i + 1}/${maxRetries})`);
+      await new Promise(r => setTimeout(r, 1000));
     }
   }
+  throw new Error('API did not start in time');
+}
 
-  process.exit(failed > 0 ? 1 : 0);
+async function seed() {
+  try {
+    await waitForAPI();
+
+    let success = 0;
+    let failed = 0;
+
+    for (const cliente of clientes) {
+      try {
+        await axios.post(`${API_URL}/customers`, cliente, { timeout: 5000 });
+        success++;
+        console.log(`[SEED] Created: ${cliente.nome}`);
+      } catch (error) {
+        failed++;
+        console.error(`[SEED] Failed: ${cliente.nome}`, error.message);
+      }
+    }
+
+    console.log(`[SEED] Done! Success: ${success}, Failed: ${failed}`);
+    process.exit(failed > 0 ? 1 : 0);
+  } catch (error) {
+    console.error('[SEED] Fatal error:', error.message);
+    process.exit(1);
+  }
 }
 
 seed();
