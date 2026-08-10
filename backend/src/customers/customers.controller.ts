@@ -19,17 +19,17 @@ export class CustomersController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createCustomerDto: CreateCustomerDto): Promise<Customer> {
+  async create(@Body() createCustomerDto: CreateCustomerDto): Promise<any> {
     return this.customersService.create(createCustomerDto);
   }
 
   @Get()
-  async findAll(): Promise<Customer[]> {
+  async findAll(): Promise<any[]> {
     return this.customersService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Customer> {
+  async findOne(@Param('id') id: string): Promise<any> {
     return this.customersService.findById(id);
   }
 
@@ -37,7 +37,7 @@ export class CustomersController {
   async update(
     @Param('id') id: string,
     @Body() updateCustomerDto: Partial<CreateCustomerDto>,
-  ): Promise<Customer> {
+  ): Promise<any> {
     return this.customersService.update(id, updateCustomerDto);
   }
 

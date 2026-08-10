@@ -88,23 +88,20 @@
 
 .col-shard {
   text-align: center;
-  font-size: 0.85rem;
 }
 
 .shard-badge {
   display: inline-block;
-  padding: 0.4rem 0.8rem;
+  padding: 0.25rem 0.75rem;
   background-color: #667eea;
   color: white;
-  border-radius: 20px;
-  font-weight: 600;
+  border-radius: 1rem;
   font-size: 0.85rem;
-  font-family: monospace;
+  font-weight: 600;
 }
 
 .table-row.selected .shard-badge {
-  background-color: white;
-  color: #667eea;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 @media (max-width: 768px) {
@@ -125,11 +122,6 @@
 
   .col-email::before {
     content: 'E-mail: ';
-    font-weight: 600;
-  }
-
-  .col-shard::before {
-    content: 'Shard: ';
     font-weight: 600;
   }
 }

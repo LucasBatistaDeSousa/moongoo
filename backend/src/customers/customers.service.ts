@@ -12,9 +12,13 @@ export class CustomersService {
     @InjectConnection() private connection: Connection,
   ) {}
 
-  async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
+  async create(createCustomerDto: CreateCustomerDto): Promise<any> {
     const createdCustomer = new this.customerModel(createCustomerDto);
-    return createdCustomer.save();
+    const saved = await createdCustomer.save();
+    return {
+      ...saved.toObject(),
+      shard: await this.getShardForCpf(createCustomerDto.cpf),
+    };
   }
 
   private async getShardForCpf(cpf: string): Promise<string> {
@@ -28,25 +32,18 @@ export class CustomersService {
         .toArray();
 
       if (!chunks || chunks.length === 0) {
-        console.log(`[DEBUG] No chunks found for ns: customers.customers`);
-        return 'unknown';
+        return 'rs0';
       }
 
       const cpfNum = parseInt(cpf.replace(/\D/g, ''), 10);
-      console.log(`[DEBUG] CPF: ${cpf} -> Numeric: ${cpfNum}`);
-      console.log(`[DEBUG] Total chunks: ${chunks.length}`);
 
-      for (let i = 0; i < chunks.length; i++) {
-        const chunk = chunks[i];
+      for (const chunk of chunks) {
         const min = chunk.min?.cpf;
         const max = chunk.max?.cpf;
-
-        console.log(`[DEBUG] Chunk ${i}: min=${min}, max=${max}, shard=${chunk.shard}`);
 
         if (min !== undefined && max !== undefined) {
           if (typeof min === 'number' && typeof max === 'number') {
             if (cpfNum >= min && cpfNum < max) {
-              console.log(`[DEBUG] MATCH! CPF ${cpf} -> Shard ${chunk.shard}`);
               return chunk.shard;
             }
           }
@@ -54,11 +51,9 @@ export class CustomersService {
       }
 
       const lastShard = chunks[chunks.length - 1]?.shard;
-      console.log(`[DEBUG] No match, using last shard: ${lastShard}`);
-      return lastShard || 'unknown';
+      return lastShard || 'rs0';
     } catch (error) {
-      console.error(`[DEBUG] Error in getShardForCpf:`, String(error));
-      return 'unknown';
+      return 'rs0';
     }
   }
 
@@ -86,7 +81,7 @@ export class CustomersService {
   async update(
     id: string,
     updateCustomerDto: Partial<CreateCustomerDto>,
-  ): Promise<Customer> {
+  ): Promise<any> {
     const updatedCustomer = await this.customerModel
       .findByIdAndUpdate(id, updateCustomerDto, { new: true })
       .exec();
@@ -95,7 +90,12 @@ export class CustomersService {
       throw new NotFoundException(`Cliente com ID ${id} não encontrado`);
     }
 
-    return updatedCustomer;
+    return {
+      ...updatedCustomer.toObject(),
+      shard: updateCustomerDto.cpf
+        ? await this.getShardForCpf(updateCustomerDto.cpf)
+        : await this.getShardForCpf(updatedCustomer.cpf),
+    };
   }
 
   async delete(id: string): Promise<void> {
@@ -103,42 +103,6 @@ export class CustomersService {
 
     if (!result) {
       throw new NotFoundException(`Cliente com ID ${id} não encontrado`);
-    }
-  }
-
-  async debugSharding(): Promise<any> {
-    try {
-      const client = this.connection.getClient();
-      const adminDb = client.db('admin');
-      const configDb = client.db('config');
-
-      console.log('[DEBUG] Querying config database for chunks...');
-
-      const chunks = await configDb
-        .collection('chunks')
-        .find({ ns: 'customers.customers' })
-        .toArray();
-
-      console.log(`[DEBUG] Found ${chunks.length} chunks`);
-
-      const collections = await configDb
-        .collection('collections')
-        .findOne({ _id: { $eq: 'customers.customers' } } as any);
-
-      console.log(`[DEBUG] Collection info:`, JSON.stringify(collections));
-
-      return {
-        chunks: chunks.map(c => ({
-          min: c.min,
-          max: c.max,
-          shard: c.shard,
-        })),
-        totalChunks: chunks.length,
-        collection: collections,
-      };
-    } catch (error) {
-      console.error('[DEBUG] Error in debugSharding:', String(error));
-      return { error: String(error) };
     }
   }
 }

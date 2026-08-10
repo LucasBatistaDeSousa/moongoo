@@ -3,7 +3,7 @@ FROM node:20-alpine as builder
 WORKDIR /app
 
 # Instalar dependências
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm install
 
 # Copiar código
@@ -21,7 +21,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Instalar apenas dependências de produção
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm install --omit=dev
 
 # Copiar build do stage anterior
@@ -32,5 +32,5 @@ COPY seed.js ./
 
 EXPOSE 3000
 
-# Rodar seed e API
-CMD sh -c "node seed.js & node dist/main.js"
+# Rodar API + seed automático
+CMD sh -c "node dist/main.js & sleep 15 && node seed.js"

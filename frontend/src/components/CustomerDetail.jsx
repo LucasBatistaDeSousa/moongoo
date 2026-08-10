@@ -63,10 +63,12 @@ function CustomerDetail({ customer, onEdit, onDelete }) {
           <p className="id-text">{customer._id}</p>
         </div>
 
-        <div className="detail-item">
-          <label>🗄️ Shard:</label>
-          <p className="shard-text">{customer.shard || 'unknown'}</p>
-        </div>
+        {customer.shard && (
+          <div className="detail-item shard-info">
+            <label>📍 Shard:</label>
+            <p className="shard-badge">{customer.shard}</p>
+          </div>
+        )}
       </div>
 
       <div className="detail-actions">

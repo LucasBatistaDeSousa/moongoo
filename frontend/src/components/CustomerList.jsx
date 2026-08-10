@@ -16,7 +16,7 @@ function CustomerList({ customers, onSelectCustomer, selectedCustomerId }) {
             <div className="col-nome">Nome</div>
             <div className="col-cpf">CPF</div>
             <div className="col-email">E-mail</div>
-            <div className="col-shard">🗄️ Shard</div>
+            <div className="col-shard">Shard</div>
           </div>
           <div className="table-body">
             {customers.map((customer) => (
@@ -31,7 +31,7 @@ function CustomerList({ customers, onSelectCustomer, selectedCustomerId }) {
                 <div className="col-cpf">{customer.cpf}</div>
                 <div className="col-email">{customer.email}</div>
                 <div className="col-shard">
-                  <span className="shard-badge">{customer.shard}</span>
+                  <span className="shard-badge">{customer.shard || 'rs0'}</span>
                 </div>
               </div>
             ))}
