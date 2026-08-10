@@ -87,7 +87,7 @@ services:
     container_name: mongos
     ports:
       - "27021:27017"
-    command: mongos --configdb configrs/config:27017 --bind_ip 0.0.0.0
+    command: mongos --configdb configrs/config:27017 --bind_ip 0.0.0.0 --logpath /dev/null
     depends_on:
       shard1:
         condition: service_healthy
