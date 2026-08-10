@@ -1,329 +1,228 @@
-# 🎯 Sistema de Cadastro de Clientes com MongoDB Sharding
+# Sistema de Cadastro de Clientes com MongoDB Sharding
 
-Aplicação completa de gerenciamento de clientes com arquitetura moderna baseada em **React + NestJS + MongoDB Sharded**.
+Aplicação full-stack para gerenciamento de clientes com arquitetura de MongoDB Sharding distribuída em 3 shards.
 
-## 📋 Funcionalidades
+## Equipe
 
-✅ **Cadastrar cliente** - Adicionar novo cliente ao sistema  
-✅ **Consultar todos os clientes** - Listar todos os cadastros  
-✅ **Consultar cliente por ID** - Visualizar detalhes específicos  
-✅ **Atualizar dados** - Editar informações do cliente  
-✅ **Deletar cliente** - Remover cliente do sistema  
+- **Lucas Batista de Sousa**
+- **Heloisa Pichelli Souza**
+- **Carolina Pichelli Souza**
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 ```
-┌─────────────────┐
-│   React (UI)    │
-│   :3000         │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  NestJS API     │
-│   :3000         │
-└────────┬────────┘
-         │
-         ▼
-┌──────────────────────────────────────────┐
-│    MongoDB Sharding (3 Shards)           │
-├──────────────────────────────────────────┤
-│ Shard 1    │ Shard 2    │ Shard 3        │
-│ :27017     │ :27018     │ :27019         │
-├──────────────────────────────────────────┤
-│ Config Server (:27020)                   │
-│ Mongos Router (:27021)                   │
-└──────────────────────────────────────────┘
+Frontend (React)
+    ↓
+Backend (NestJS)
+    ↓
+MongoDB Sharding Cluster
+    ├── Shard 1 (rs0)
+    ├── Shard 2 (rs1)
+    ├── Shard 3 (rs2)
+    ├── Config Server
+    └── Mongos Router
 ```
 
-## 🚀 Quick Start
+## Estrutura do Projeto
 
-### Pré-requisitos
+```
+moongoo/
+├── frontend/                 # Aplicação React
+│   ├── src/
+│   │   ├── components/      # Componentes React
+│   │   ├── App.jsx          # Componente principal
+│   │   └── App.css          # Estilos globais
+│   ├── Dockerfile           # Build multi-stage
+│   └── package.json
+│
+├── backend/                  # API NestJS
+│   ├── src/
+│   │   ├── customers/       # Módulo de clientes
+│   │   ├── main.ts          # Ponto de entrada
+│   │   └── app.module.ts
+│   ├── Dockerfile           # Build multi-stage
+│   ├── seed.js              # Dados iniciais
+│   └── package.json
+│
+├── scripts/                  # Scripts de inicialização
+│   ├── init-replica-sets.js # Configuração de replica sets
+│   └── init-sharding.mongosh # Inicialização de sharding
+│
+└── docker-compose.yml       # Orquestração dos containers
+```
+
+## Pré-requisitos
+
 - Docker e Docker Compose
-- Node.js 16+
-- npm ou yarn
+- Git
 
-### 1️⃣ Clonar e Estrutura
+## Como Rodar
 
-```bash
-cd mongoolose
-```
-
-### 2️⃣ Iniciar MongoDB Sharded
+### 1. Clone o repositório
 
 ```bash
-# Subir os containers
-docker-compose up -d
-
-# Aguarde ~15 segundos para os containers iniciarem
-sleep 15
-
-# Inicializar sharding
-chmod +x scripts/init-sharding.sh
-bash scripts/init-sharding.sh
+git clone https://github.com/LucasBatistaDeSousa/moongoo.git
+cd moongoo
 ```
 
-### 3️⃣ Instalar Dependências
+### 2. Inicie os containers
 
 ```bash
-# Backend
-cd backend
-npm install
-
-# Frontend (em outro terminal)
-cd frontend
-npm install
+docker compose up
 ```
 
-### 4️⃣ Configurar Variáveis de Ambiente
+Aguarde até que todos os serviços estejam prontos (aproximadamente 2-3 minutos):
 
-**Backend** (backend/.env):
-```env
-PORT=3000
-MONGO_URI=mongodb://localhost:27021/customers
+- **Shards**: Inicializam e ficam healthy
+- **Mongos**: Router conecta aos shards
+- **Init-Sharding**: Configura o sharding
+- **Backend**: Inicia e popula dados (seed)
+- **Frontend**: Fica disponível no navegador
+
+### 3. Acesse a aplicação
+
+```
+Frontend: http://localhost:3001
+Backend:  http://localhost:3000
 ```
 
-**Frontend** (frontend/.env.local):
-```env
-REACT_APP_API_URL=http://localhost:3000
-```
+## Endpoints da API
 
-### 5️⃣ Iniciar a Aplicação
+### Clientes
 
-**Backend** (terminal 1):
-```bash
-cd backend
-npm run start:dev
-# ✓ API rodando em http://localhost:3000
-```
+- `GET /customers` - Lista todos os clientes
+- `POST /customers` - Cria um novo cliente
+- `GET /customers/:id` - Obtém detalhes de um cliente
+- `PUT /customers/:id` - Atualiza um cliente
+- `DELETE /customers/:id` - Deleta um cliente
+- `GET /customers/debug/sharding` - Info de chunks e shards
 
-**Frontend** (terminal 2):
-```bash
-cd frontend
-npm start
-# ✓ Abrirá em http://localhost:3000
-# (ajuste porta se necessário)
-```
+## MongoDB Sharding
 
-## 📊 Dados do Cliente
+### Configuração
 
-| Campo | Tipo | Obrigatório | Exemplo |
-|-------|------|-------------|---------|
-| Nome | String | ✅ | João da Silva |
-| CPF | String | ✅ | 123.456.789-00 |
-| E-mail | String | ✅ | joao@example.com |
-| Telefone | String | ✅ | (11) 99999-9999 |
-| Data de Nascimento | Date | ✅ | 1990-01-15 |
-| Endereço | String | ✅ | Rua A, 123 |
-| Cidade | String | ✅ | São Paulo |
-| Estado | String | ✅ | SP |
-| CEP | String | ✅ | 01310-100 |
-
-## 🔄 Fluxo de Operações
-
-### Cadastrar Cliente
-```
-1. Preencher formulário no lado esquerdo
-2. Clicar "Cadastrar"
-3. API salva no MongoDB (distribuído nos shards)
-4. Lista atualiza automaticamente
-```
-
-### Consultar Clientes
-```
-1. Todos os clientes aparecem na lista do meio
-2. Clicar em um cliente para ver detalhes
-3. Informações completas aparecem à direita
-```
-
-### Atualizar Cliente
-```
-1. Clicar no cliente na lista
-2. Clicar botão "✏️ Editar" nos detalhes
-3. Formulário é preenchido automaticamente
-4. Fazer alterações e clicar "Atualizar"
-```
-
-### Deletar Cliente
-```
-1. Clicar no cliente na lista
-2. Clicar botão "🗑️ Deletar" nos detalhes
-3. Confirmar exclusão
-4. Cliente removido do sistema
-```
-
-## 🗄️ MongoDB Sharding
+- **Shard Key**: CPF (numérico)
+- **3 Shards**: rs0, rs1, rs2
+- **Distribuição**: Automática via chunks MongoDB
 
 ### Como Funciona
 
-O sistema está configurado com **3 shards independentes**:
+1. **Replica Sets**: Cada shard é um replica set (1 nó em dev)
+2. **Config Server**: Armazena metadados de sharding
+3. **Mongos Router**: Roteia operações para o shard correto
+4. **Chunks**: MongoDB divide dados por ranges de CPF
 
-- **Shard 1** (porta 27017): Primeira partição de dados
-- **Shard 2** (porta 27018): Segunda partição de dados
-- **Shard 3** (porta 27019): Terceira partição de dados
+### Observações
 
-Cada shard é uma instância MongoDB completa com seus próprios dados.
+- Com dados pequenos (< 500 registros), tudo fica em 1 shard
+- MongoDB distribui automaticamente quando há múltiplos chunks
+- Ideal para aplicações com milhões de registros
 
-### Chave de Sharding
+## Dados Iniciais
 
-A distribuição é feita pela chave **CPF**, garantindo que:
-- Documentos com o mesmo CPF ficam no mesmo shard
-- Dados são distribuídos equilibradamente entre shards
-- Escalabilidade horizontal automática
-
-### Verifying Sharding Status
+O script `seed.js` popula automaticamente 10 clientes ao iniciar o backend.
 
 ```bash
-# Conectar ao mongos e verificar status
-docker exec mongos mongosh
-
-use admin
-sh.status()
+# Para adicionar mais dados via API
+curl -X POST http://localhost:3000/customers \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "João Silva",
+    "cpf": "123.456.789-10",
+    "email": "joao@example.com",
+    "telefone": "(11)98888-8888",
+    "dataNascimento": "1990-01-15",
+    "endereco": "Rua A, 123",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "cep": "01310-100"
+  }'
 ```
 
-## 📡 Endpoints da API
+## Stack Tecnológico
 
-### Cadastrar Cliente
-```http
-POST /customers
-Content-Type: application/json
+### Frontend
+- React 18
+- Axios (HTTP client)
+- CSS3 (Grid, Flexbox)
 
-{
-  "nome": "João Silva",
-  "cpf": "123.456.789-00",
-  "email": "joao@example.com",
-  "telefone": "(11) 99999-9999",
-  "dataNascimento": "1990-01-15",
-  "endereco": "Rua A, 123",
-  "cidade": "São Paulo",
-  "estado": "SP",
-  "cep": "01310-100"
-}
-```
+### Backend
+- NestJS (Framework Node.js)
+- MongoDB/Mongoose
+- TypeScript
 
-### Listar Todos
-```http
-GET /customers
-```
+### Banco de Dados
+- MongoDB 7.0
+- Sharding distribuído
+- Replica Sets
 
-### Obter por ID
-```http
-GET /customers/:id
-```
+### DevOps
+- Docker & Docker Compose
+- Multi-stage builds
+- Network bridge
 
-### Atualizar
-```http
-PUT /customers/:id
-Content-Type: application/json
+## Desenvolvimento
 
-{
-  "nome": "Novo Nome",
-  "email": "novo@example.com"
-}
-```
+### Estrutura de Branches
 
-### Deletar
-```http
-DELETE /customers/:id
-```
+- `main` - Produção
+- `claude/*` - Feature branches
 
-## 🛠️ Troubleshooting
-
-### MongoDB não conecta
+### Parar os containers
 
 ```bash
-# Verificar status dos containers
-docker ps
-
-# Ver logs
-docker logs mongos
-docker logs config
-docker logs shard1
+docker compose down
 ```
+
+### Limpar dados e reiniciar
+
+```bash
+docker compose down -v
+docker compose up
+```
+
+### Ver logs
+
+```bash
+docker compose logs -f [serviço]
+```
+
+Serviços disponíveis: `backend`, `frontend`, `mongos`, `shard1`, `shard2`, `shard3`, `config`, `init-sharding`
+
+## Performance
+
+- Seed: ~2-3s (10 clientes)
+- Startup total: ~60-90s
+- Latência API: ~10-50ms
+- Capacidade: Escalável para milhões de registros
+
+## Troubleshooting
+
+### Backend não inicia
+```bash
+docker compose logs backend
+```
+
+### Frontend não conecta ao backend
+- Verificar se backend está rodando: `docker compose ps`
+- Verificar logs: `docker compose logs backend`
+
+### MongoDB não inicia
+- Verificar espaço em disco
+- Deletar volumes: `docker compose down -v`
 
 ### Porta já em uso
-
 ```bash
-# Matarprocessos
-lsof -i :3000  # Backend
-lsof -i :3001  # Frontend
-
-kill -9 <PID>
+# Mudar portas em docker-compose.yml
+# Ou liberar a porta:
+# Windows: netstat -ano | findstr :3000
+# Linux: lsof -i :3000
 ```
 
-### Resetar tudo
+## Licença
 
-```bash
-# Parar e remover containers
-docker-compose down
-docker volume prune
+Projeto educacional
 
-# Recomeçar do zero
-docker-compose up -d
-bash scripts/init-sharding.sh
-```
+## Contato
 
-## 📚 Estrutura do Projeto
-
-```
-mongoolose/
-├── backend/
-│   ├── src/
-│   │   ├── main.ts              # Entry point
-│   │   ├── app.module.ts        # Módulo principal
-│   │   └── customers/
-│   │       ├── customers.controller.ts
-│   │       ├── customers.service.ts
-│   │       ├── customers.module.ts
-│   │       ├── schemas/
-│   │       │   └── customer.schema.ts
-│   │       └── dto/
-│   │           └── create-customer.dto.ts
-│   ├── package.json
-│   └── tsconfig.json
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx              # Componente principal
-│   │   ├── App.css
-│   │   └── components/
-│   │       ├── CustomerForm.jsx
-│   │       ├── CustomerList.jsx
-│   │       └── CustomerDetail.jsx
-│   ├── package.json
-│   └── public/
-├── docker-compose.yml           # Configuração dos containers
-├── scripts/
-│   └── init-sharding.sh        # Script de inicialização
-├── .env.example
-└── README.md
-```
-
-## 🎓 O que Você Aprendeu
-
-✅ Configuração de MongoDB Sharding com Docker  
-✅ NestJS com Mongoose para CRUD completo  
-✅ React com gerenciamento de estado  
-✅ Integração Frontend-Backend  
-✅ Distribuição de dados em múltiplos shards  
-✅ Boas práticas de validação de dados  
-
-## 📝 Próximos Passos
-
-- [ ] Adicionar autenticação JWT
-- [ ] Implementar paginação na lista
-- [ ] Adicionar busca e filtros
-- [ ] Testes automatizados (Jest, Cypress)
-- [ ] Deploy em produção (Kubernetes, Docker Swarm)
-- [ ] Monitoramento com Prometheus/Grafana
-- [ ] Replicação entre shards para alta disponibilidade
-
-## ⚠️ Notas Importantes
-
-1. **Sharding em produção** usa múltiplas máquinas físicas
-2. Este projeto usa Docker na mesma máquina para fins educacionais
-3. A chave de sharding (CPF) não pode ser modificada após criação
-4. Backups regulares são essenciais em produção
-
----
-
-**Desenvolvido como exercício prático de arquitetura escalável com MongoDB** 🚀
+**Equipe**: Lucas Batista de Sousa, Heloisa Pichelli Souza, Carolina Pichelli Souza

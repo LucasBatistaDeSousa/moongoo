@@ -10,7 +10,7 @@ function CustomerDetail({ customer, onEdit, onDelete }) {
 
   return (
     <div className="customer-detail">
-      <h2>📝 Detalhes do Cliente</h2>
+      <h2>Detalhes do Cliente</h2>
 
       <div className="detail-content">
         <div className="detail-item">
@@ -62,21 +62,14 @@ function CustomerDetail({ customer, onEdit, onDelete }) {
           <label>ID MongoDB:</label>
           <p className="id-text">{customer._id}</p>
         </div>
-
-        {customer.shard && (
-          <div className="detail-item shard-info">
-            <label>📍 Shard:</label>
-            <p className="shard-badge">{customer.shard}</p>
-          </div>
-        )}
       </div>
 
       <div className="detail-actions">
         <button className="btn btn-edit" onClick={onEdit}>
-          ✏️ Editar
+          Editar
         </button>
         <button className="btn btn-delete" onClick={onDelete}>
-          🗑️ Deletar
+          Deletar
         </button>
       </div>
     </div>

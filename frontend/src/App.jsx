@@ -94,7 +94,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>📋 Sistema de Cadastro de Clientes</h1>
+        <h1>Sistema de Cadastro de Clientes</h1>
         <p>Gerenciamento com MongoDB Sharding</p>
       </header>
 

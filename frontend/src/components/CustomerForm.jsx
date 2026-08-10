@@ -72,7 +72,7 @@ function CustomerForm({ onSubmit, initialData, isEditing, onCancelEdit }) {
 
   return (
     <form className="customer-form" onSubmit={handleSubmit}>
-      <h2>{isEditing ? '✏️ Editar Cliente' : '➕ Novo Cliente'}</h2>
+      <h2>{isEditing ? 'Editar Cliente' : 'Novo Cliente'}</h2>
 
       <div className="form-group">
         <label htmlFor="nome">Nome *</label>

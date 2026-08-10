@@ -4,7 +4,7 @@ import './CustomerList.css';
 function CustomerList({ customers, onSelectCustomer, selectedCustomerId }) {
   return (
     <div className="customer-list">
-      <h2>👥 Lista de Clientes ({customers.length})</h2>
+      <h2>Lista de Clientes ({customers.length})</h2>
       {customers.length === 0 ? (
         <div className="empty-state">
           <p>Nenhum cliente cadastrado ainda.</p>
@@ -16,7 +16,6 @@ function CustomerList({ customers, onSelectCustomer, selectedCustomerId }) {
             <div className="col-nome">Nome</div>
             <div className="col-cpf">CPF</div>
             <div className="col-email">E-mail</div>
-            <div className="col-shard">Shard</div>
           </div>
           <div className="table-body">
             {customers.map((customer) => (
@@ -30,9 +29,6 @@ function CustomerList({ customers, onSelectCustomer, selectedCustomerId }) {
                 <div className="col-nome">{customer.nome}</div>
                 <div className="col-cpf">{customer.cpf}</div>
                 <div className="col-email">{customer.email}</div>
-                <div className="col-shard">
-                  <span className="shard-badge">{customer.shard || 'rs0'}</span>
-                </div>
               </div>
             ))}
           </div>
