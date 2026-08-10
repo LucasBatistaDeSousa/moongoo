@@ -22,7 +22,7 @@ WORKDIR /app
 
 # Instalar apenas dependências de produção
 COPY package.json package-lock.json ./
-RUN npm ci --only=production
+RUN npm install --omit=dev
 
 # Copiar build do stage anterior
 COPY --from=builder /app/dist ./dist
