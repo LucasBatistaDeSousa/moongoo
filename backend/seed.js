@@ -8,8 +8,10 @@ function generateClientes(count) {
 
   const clientes = [];
   for (let i = 0; i < count; i++) {
-    const cpfNum = String(10000000000 + i).padStart(11, '0');
-    const cpf = `${cpfNum.substring(0, 3)}.${cpfNum.substring(3, 6)}.${cpfNum.substring(6, 9)}-${cpfNum.substring(9)}`;
+    const cpfBase = Math.floor((i / count) * 1000000000);
+    const cpfNum = String(cpfBase).padStart(9, '0');
+    const cpfCheck = String(i % 100).padStart(2, '0');
+    const cpf = `${cpfNum.substring(0, 3)}.${cpfNum.substring(3, 6)}.${cpfNum.substring(6, 9)}-${cpfCheck}`;
     const nome = `${nomes[i % nomes.length]} ${sobrenomes[i % sobrenomes.length]}`;
     const cidade = cidades[i % cidades.length];
     const estado = estados[i % estados.length];
