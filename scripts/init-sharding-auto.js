@@ -38,7 +38,24 @@ async function initSharding() {
       await customersDb.admin().command({ enableSharding: 'customers' });
       console.log('✅ Sharding habilitado no banco');
 
-      await customersDb.collection('customers').createIndex({ cpf: 1 });
+      // Drop existing CPF indexes before creating shard key index
+      try {
+        const customersCollection = customersDb.collection('customers');
+        const indexes = await customersCollection.listIndexes().toArray();
+        for (const index of indexes) {
+          if (index.key.cpf === 1 || index.key.cpf === -1) {
+            await customersCollection.dropIndex(index.name);
+            console.log(`✅ Índice existente removido: ${index.name}`);
+          }
+        }
+      } catch (indexError) {
+        console.log(`⚠️  Erro ao remover índices antigos (pode ser normal): ${indexError.message}`);
+      }
+
+      // Create shard key index
+      await customersDb.collection('customers').createIndex({ cpf: 1 }, { sparse: true });
+      console.log('✅ Índice de sharding criado');
+
       await customersDb.admin().command({
         shardCollection: 'customers.customers',
         key: { cpf: 1 }

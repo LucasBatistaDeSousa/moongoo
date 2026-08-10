@@ -9,7 +9,7 @@ export class Customer extends Document {
   @Prop({ required: true })
   nome: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   cpf: string;
 
   @Prop({ required: true })
