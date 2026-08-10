@@ -32,5 +32,5 @@ COPY seed.js ./
 
 EXPOSE 3000
 
-# Rodar API + seed automático
-CMD sh -c "node dist/main.js & sleep 15 && node seed.js"
+# Rodar API
+CMD node dist/main.js
