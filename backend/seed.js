@@ -1,17 +1,37 @@
 const axios = require('axios');
 
-const clientes = [
-  { nome: 'João Silva', cpf: '111.111.111-11', email: 'joao1@test.com', telefone: '(11)98888-8888', dataNascimento: '1990-01-15', endereco: 'Rua A, 123', cidade: 'São Paulo', estado: 'SP', cep: '01310-100' },
-  { nome: 'Maria Santos', cpf: '222.222.222-22', email: 'maria1@test.com', telefone: '(21)98888-8888', dataNascimento: '1985-05-20', endereco: 'Rua B, 456', cidade: 'Rio de Janeiro', estado: 'RJ', cep: '20000-000' },
-  { nome: 'Carlos Mendes', cpf: '333.333.333-33', email: 'carlos1@test.com', telefone: '(47)98888-8888', dataNascimento: '1988-07-22', endereco: 'Rua C, 789', cidade: 'Joinville', estado: 'SC', cep: '89000-000' },
-  { nome: 'Ana Costa', cpf: '444.444.444-44', email: 'ana1@test.com', telefone: '(85)98888-8888', dataNascimento: '1992-03-10', endereco: 'Rua D, 321', cidade: 'Fortaleza', estado: 'CE', cep: '60000-000' },
-  { nome: 'Pedro Oliveira', cpf: '555.555.555-55', email: 'pedro1@test.com', telefone: '(31)98888-8888', dataNascimento: '1995-11-05', endereco: 'Rua E, 654', cidade: 'Belo Horizonte', estado: 'MG', cep: '30000-000' },
-  { nome: 'Lucas Ferreira', cpf: '666.666.666-66', email: 'lucas1@test.com', telefone: '(51)98888-8888', dataNascimento: '1993-06-12', endereco: 'Rua F, 987', cidade: 'Porto Alegre', estado: 'RS', cep: '90000-000' },
-  { nome: 'Fernanda Alves', cpf: '777.777.777-77', email: 'fernanda1@test.com', telefone: '(71)98888-8888', dataNascimento: '1991-02-28', endereco: 'Rua G, 147', cidade: 'Salvador', estado: 'BA', cep: '40000-000' },
-  { nome: 'Ricardo Gomes', cpf: '888.888.888-88', email: 'ricardo1@test.com', telefone: '(61)98888-8888', dataNascimento: '1987-09-30', endereco: 'Rua H, 258', cidade: 'Brasília', estado: 'DF', cep: '70000-000' },
-  { nome: 'Juliana Martins', cpf: '999.999.999-99', email: 'juliana1@test.com', telefone: '(81)98888-8888', dataNascimento: '1994-04-17', endereco: 'Rua I, 369', cidade: 'Recife', estado: 'PE', cep: '50000-000' },
-  { nome: 'Bruno Castro', cpf: '101.010.101-01', email: 'bruno1@test.com', telefone: '(41)98888-8888', dataNascimento: '1989-12-03', endereco: 'Rua J, 456', cidade: 'Curitiba', estado: 'PR', cep: '80000-000' },
-];
+function generateClientes(count) {
+  const nomes = ['João', 'Maria', 'Carlos', 'Ana', 'Pedro', 'Lucas', 'Fernanda', 'Ricardo', 'Juliana', 'Bruno', 'Felipe', 'Mariana', 'Diego', 'Sofia', 'Roberto', 'Beatriz', 'Antonio', 'Camila'];
+  const sobrenomes = ['Silva', 'Santos', 'Mendes', 'Costa', 'Oliveira', 'Ferreira', 'Alves', 'Gomes', 'Martins', 'Castro', 'Pereira', 'Carvalho', 'Rocha', 'Souza', 'Fernandes', 'Ribeiro', 'Barbosa', 'Monteiro'];
+  const cidades = ['São Paulo', 'Rio de Janeiro', 'Belo Horizonte', 'Brasília', 'Salvador', 'Fortaleza', 'Recife', 'Porto Alegre', 'Curitiba', 'Manaus', 'Belém', 'Goiânia', 'Maceió', 'João Pessoa', 'Natal', 'Teresina'];
+  const estados = ['SP', 'RJ', 'MG', 'DF', 'BA', 'CE', 'PE', 'RS', 'PR', 'AM', 'PA', 'GO', 'AL', 'PB', 'RN', 'PI'];
+
+  const clientes = [];
+  for (let i = 0; i < count; i++) {
+    const cpfBase = Math.floor((i / count) * 1000000000);
+    const cpfNum = String(cpfBase).padStart(9, '0');
+    const cpfCheck = String(i % 100).padStart(2, '0');
+    const cpf = `${cpfNum.substring(0, 3)}.${cpfNum.substring(3, 6)}.${cpfNum.substring(6, 9)}-${cpfCheck}`;
+    const nome = `${nomes[i % nomes.length]} ${sobrenomes[i % sobrenomes.length]}`;
+    const cidade = cidades[i % cidades.length];
+    const estado = estados[i % estados.length];
+
+    clientes.push({
+      nome,
+      cpf,
+      email: `cliente${i}@example.com`,
+      telefone: `(${String((i % 85) + 11).padStart(2, '0')})9${String(98000000 + (i % 10000000)).padStart(8, '0')}`,
+      dataNascimento: `${1970 + (i % 50)}-${String((i % 12) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
+      endereco: `Rua ${String.fromCharCode(65 + (i % 26))}, ${(i % 9999) + 1}`,
+      cidade,
+      estado,
+      cep: `${String((i % 99999)).padStart(5, '0')}-${String((i + 100) % 1000).padStart(3, '0')}`
+    });
+  }
+  return clientes;
+}
+
+const clientes = generateClientes(1500);
 
 const API_URL = process.env.API_URL || 'http://backend:3000';
 
