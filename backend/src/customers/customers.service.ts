@@ -18,7 +18,8 @@ export class CustomersService {
 
   private async getShardForCpf(cpf: string): Promise<string> {
     try {
-      const configDb = this.connection.client.db('config');
+      const client = this.connection.getClient();
+      const configDb = client.db('config');
       const chunks = await configDb.collection('chunks').find({
         ns: 'customers.customers',
       }).toArray();
