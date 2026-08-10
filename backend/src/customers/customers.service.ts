@@ -26,17 +26,24 @@ export class CustomersService {
       }).toArray();
 
       if (chunks.length === 0) {
+        console.log(`[SHARD] No chunks found for CPF ${cpf}`);
         return 'unknown';
       }
 
+      console.log(`[SHARD] Found ${chunks.length} chunks:`, JSON.stringify(chunks.map(c => ({ min: c.min, max: c.max, shard: c.shard }))));
+
       const cpfNum = parseInt(cpf.replace(/\D/g, ''), 10);
+      console.log(`[SHARD] Looking for CPF ${cpf} (numeric: ${cpfNum})`);
 
       for (const chunk of chunks) {
         const min = chunk.min?.cpf !== undefined ? chunk.min.cpf : chunk.min;
         const max = chunk.max?.cpf !== undefined ? chunk.max.cpf : chunk.max;
 
+        console.log(`[SHARD] Checking chunk: min=${min}, max=${max}, shard=${chunk.shard}`);
+
         if (typeof min === 'number' && typeof max === 'number') {
           if (cpfNum >= min && cpfNum < max) {
+            console.log(`[SHARD] CPF ${cpf} matched to shard ${chunk.shard}`);
             return chunk.shard || 'unknown';
           }
         }
@@ -45,12 +52,16 @@ export class CustomersService {
       for (const chunk of chunks) {
         const min = chunk.min?.cpf !== undefined ? chunk.min.cpf : chunk.min;
         if (typeof min === 'number' && cpfNum < min) {
+          console.log(`[SHARD] CPF ${cpf} is below min, returning first shard ${chunk.shard}`);
           return chunk.shard || 'unknown';
         }
       }
 
-      return chunks[chunks.length - 1]?.shard || 'unknown';
+      const lastShard = chunks[chunks.length - 1]?.shard || 'unknown';
+      console.log(`[SHARD] CPF ${cpf} defaulting to last shard ${lastShard}`);
+      return lastShard;
     } catch (error) {
+      console.error(`[SHARD] Error getting shard for CPF ${cpf}:`, error);
       return 'unknown';
     }
   }
