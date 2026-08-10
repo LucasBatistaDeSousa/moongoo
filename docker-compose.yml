@@ -16,8 +16,6 @@ services:
     command: mongod --shardsvr --replSet rs0 --port 27017 --dbpath /data/db
     networks:
       - mongo_network
-    logging:
-      driver: none
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s
@@ -35,8 +33,6 @@ services:
     command: mongod --shardsvr --replSet rs1 --port 27017 --dbpath /data/db
     networks:
       - mongo_network
-    logging:
-      driver: none
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s
@@ -54,8 +50,6 @@ services:
     command: mongod --shardsvr --replSet rs2 --port 27017 --dbpath /data/db
     networks:
       - mongo_network
-    logging:
-      driver: none
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s
@@ -73,8 +67,6 @@ services:
     command: mongod --configsvr --replSet configrs --port 27017 --dbpath /data/db
     networks:
       - mongo_network
-    logging:
-      driver: none
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s
@@ -99,8 +91,6 @@ services:
         condition: service_healthy
     networks:
       - mongo_network
-    logging:
-      driver: none
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s
@@ -121,8 +111,6 @@ services:
         condition: service_healthy
     networks:
       - mongo_network
-    logging:
-      driver: none
     restart: on-failure
 
   # ============================================
@@ -143,8 +131,6 @@ services:
         condition: service_completed_successfully
     networks:
       - mongo_network
-    logging:
-      driver: none
     restart: on-failure
 
   # ============================================
@@ -163,8 +149,6 @@ services:
       - backend
     networks:
       - mongo_network
-    logging:
-      driver: none
     restart: on-failure
 
 volumes:
