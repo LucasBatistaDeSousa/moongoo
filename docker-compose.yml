@@ -119,7 +119,7 @@ services:
     container_name: init-sharding
     volumes:
       - ./scripts/init-sharding.mongosh:/app/init-sharding.mongosh
-    command: mongosh mongodb://mongos:27017 < /app/init-sharding.mongosh
+    command: sh -c "mongosh mongodb://mongos:27017 /app/init-sharding.mongosh"
     depends_on:
       mongos:
         condition: service_healthy
