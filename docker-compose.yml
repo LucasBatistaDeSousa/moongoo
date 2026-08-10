@@ -115,13 +115,11 @@ services:
 
   # Init Sharding Service
   init-sharding:
-    image: node:20-alpine
+    image: mongo:7.0
     container_name: init-sharding
-    working_dir: /app
     volumes:
-      - ./scripts/init-sharding-auto.js:/app/init-sharding.js
-    command: |
-      sh -c "npm install mongodb > /dev/null 2>&1 && node init-sharding.js"
+      - ./scripts/init-sharding.sh:/app/init-sharding.sh
+    command: bash /app/init-sharding.sh
     depends_on:
       mongos:
         condition: service_healthy
