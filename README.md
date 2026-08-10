@@ -68,7 +68,7 @@ cd moongoo
 ### 2. Inicie os containers
 
 ```bash
-docker compose up
+docker compose up -d
 ```
 
 Aguarde até que todos os serviços estejam prontos (aproximadamente 2-3 minutos):
